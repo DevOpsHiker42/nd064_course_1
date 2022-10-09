@@ -1,10 +1,37 @@
 import sqlite3
+import sys
 
 from flask import Flask, jsonify, json, render_template, request, url_for, redirect, flash
+from logging.config import dictConfig
 from werkzeug.exceptions import abort
 
 # Global variable to keep track of database connection count
 db_connection_count = 0
+
+# Set up logging to STDOUT, log level=DEBUG
+# Ref. https://flask.palletsprojects.com/en/1.0.x/logging/
+# See example at:
+# https://stackoverflow.com/questions/56905756/how-to-make-flask-log-to-stdout-instead-of-stderr
+
+dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://sys.stdout',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'DEBUG',
+        'handlers': ['wsgi']
+    }
+})
+
+# Define the Flask application
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'your secret key'
 
 # Function to get a database connection.
 # This function connects to database with the name `database.db`
@@ -32,10 +59,6 @@ def get_post(post_id):
     close_db_connection(connection)
     return post
 
-# Define the Flask application
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your secret key'
-
 # Define the main route of the web application
 @app.route('/')
 def index():
@@ -48,15 +71,18 @@ def index():
 # If the post ID is not found a 404 page is shown
 @app.route('/<int:post_id>')
 def post(post_id):
-    post = get_post(post_id)
-    if post is None:
+    article = get_post(post_id)
+    if article is None:
+        app.logger.warning('Article does not exist with id=' + str(post_id) + ' (returning 404)')
         return render_template('404.html'), 404
     else:
-        return render_template('post.html', post=post)
+        app.logger.info('Article retrieved (id=' + str(post_id) + ') with title=' + article['title'])
+        return render_template('post.html', post=article)
 
 # Define the About Us page
 @app.route('/about')
 def about():
+    app.logger.info('Retrieving "About Us" page')
     return render_template('about.html')
 
 # Define the post creation functionality
@@ -74,6 +100,7 @@ def create():
                          (title, content))
             connection.commit()
             close_db_connection(connection)
+            app.logger.info('New article created with title=' + title)
 
             return redirect(url_for('index'))
 
