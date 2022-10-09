@@ -1,9 +1,10 @@
 name: techtrends-dockerhub
 
 ## Trigger policy
-on: [push]
-  branches:
-    - 'main'
+on:
+  push:
+    branches:
+      - 'main'
 
 ## Workflow steps
 jobs:
