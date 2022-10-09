@@ -16,7 +16,8 @@ db_connection_count = 0
 dictConfig({
     'version': 1,
     'formatters': {'default': {
-        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+        'format': '%(levelname)s : %(module)s : %(asctime)s : %(message)s',
+        'datefmt': '%m/%d/%Y %H:%M:%S',
     }},
     'handlers': {'wsgi': {
         'class': 'logging.StreamHandler',
@@ -76,7 +77,7 @@ def post(post_id):
         app.logger.warning('Article does not exist with id=' + str(post_id) + ' (returning 404)')
         return render_template('404.html'), 404
     else:
-        app.logger.info('Article retrieved (id=' + str(post_id) + ') with title=' + article['title'])
+        app.logger.info('Article ' + article['title'] + ' retrieved!')
         return render_template('post.html', post=article)
 
 # Define the About Us page
