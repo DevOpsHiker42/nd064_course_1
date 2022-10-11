@@ -16,7 +16,7 @@ spec:
        tag: techtrends
     spec:
       containers:
-      - image: techtrends:latest
+      - image: devopshiker42/techtrends:latest
         imagePullPolicy: IfNotPresent
         name: techtrends
         ports:
