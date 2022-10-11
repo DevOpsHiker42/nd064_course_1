@@ -11,6 +11,9 @@ spec:
     matchLabels:
       tag: techtrends
   template:
+    metadata:
+     labels:
+       tag: techtrends
     spec:
       containers:
       - image: techtrends:latest
