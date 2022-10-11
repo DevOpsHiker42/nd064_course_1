@@ -3,9 +3,13 @@ kind: Service
 metadata:
   name: techtrends
   namespace: sandbox
+  labels:
+    tag: techtrends
 spec:
   ports:
   - port: 4111
     protocol: TCP
     targetPort: 3111
   type: ClusterIP
+  selector:
+    tag: techtrends

@@ -1,10 +1,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    tag: techtrends
   name: techtrends
   namespace: sandbox
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      tag: techtrends
   template:
     spec:
       containers:
@@ -28,3 +33,4 @@ spec:
           httpGet:
             path: /healthz
             port: 3111
+
