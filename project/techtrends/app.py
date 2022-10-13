@@ -1,33 +1,36 @@
+import logging
 import sqlite3
 import sys
 
 from flask import Flask, jsonify, json, render_template, request, url_for, redirect, flash
-from logging.config import dictConfig
 from werkzeug.exceptions import abort
 
 # Global variable to keep track of database connection count
 db_connection_count = 0
 
-# Set up logging to STDOUT, log level=DEBUG
-# Ref. https://flask.palletsprojects.com/en/1.0.x/logging/
-# See example at:
-# https://stackoverflow.com/questions/56905756/how-to-make-flask-log-to-stdout-instead-of-stderr
-
-dictConfig({
-    'version': 1,
-    'formatters': {'default': {
-        'format': '%(levelname)s : %(module)s : %(asctime)s : %(message)s',
-        'datefmt': '%m/%d/%Y %H:%M:%S',
-    }},
-    'handlers': {
-        'stdout': { 'class': 'logging.StreamHandler', 'stream': 'ext://sys.stdout', 'formatter': 'default'},
-        'stderr': { 'class': 'logging.StreamHandler', 'stream': 'ext://sys.stderr', 'formatter': 'default'},
-    },
-    'root': {
-        'level': 'DEBUG',
-        'handlers': ['stdout', 'stderr']
-    }
-})
+def configure_logging(log_level=logging.DEBUG):
+    # Set up logging to STDOUT & STDERR
+    # Defaults to log_level=DEBUG
+    # See https://flask.palletsprojects.com/en/1.0.x/logging/ for further info.
+    #
+    # Set up stream handlers
+    #
+    stderr_handler = logging.StreamHandler(stream=sys.stderr)
+    stdout_handler = logging.StreamHandler(stream=sys.stdout)
+    handlers = [stderr_handler, stdout_handler]
+    #
+    # Output format
+    #
+    output_format = '%(levelname)s : %(module)s : %(asctime)s : %(message)s'
+    date_format = '%m/%d/%Y %H:%M:%S'
+    #
+    # Configure logger
+    #
+    logging.basicConfig(
+        format=output_format,
+        datefmt=date_format,
+        level=log_level,
+        handlers=handlers)
 
 # Define the Flask application
 app = Flask(__name__)
@@ -135,4 +138,6 @@ def metrics():
 
 # start the application on port 3111
 if __name__ == "__main__":
+    # Configure logging (level defaults to DEBUG unless log_level argument provided)
+    configure_logging()
     app.run(host='0.0.0.0', port='3111')
