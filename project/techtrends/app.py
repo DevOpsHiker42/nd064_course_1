@@ -19,14 +19,13 @@ dictConfig({
         'format': '%(levelname)s : %(module)s : %(asctime)s : %(message)s',
         'datefmt': '%m/%d/%Y %H:%M:%S',
     }},
-    'handlers': {'wsgi': {
-        'class': 'logging.StreamHandler',
-        'stream': 'ext://sys.stdout',
-        'formatter': 'default'
-    }},
+    'handlers': {
+        'stdout': { 'class': 'logging.StreamHandler', 'stream': 'ext://sys.stdout', 'formatter': 'default'},
+        'stderr': { 'class': 'logging.StreamHandler', 'stream': 'ext://sys.stderr', 'formatter': 'default'},
+    },
     'root': {
         'level': 'DEBUG',
-        'handlers': ['wsgi']
+        'handlers': ['stdout', 'stderr']
     }
 })
 
