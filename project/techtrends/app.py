@@ -47,10 +47,8 @@ def get_db_connection():
     return connection
 
 def close_db_connection(connection):
-    # Close connection and decrement global db_connection_count variable
-    global db_connection_count
+    # Close connection
     connection.close()
-    db_connection_count -= 1
 
 # Function to get a post using its ID
 def get_post(post_id):
